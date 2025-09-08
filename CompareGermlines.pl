@@ -21,16 +21,23 @@ my $totSim = 0;
 my $totID  = 0;
 my $count  = 0;
 
+my $tdir = "/tmp/cgl" . $$ . time();
+`mkdir $tdir`;
+die "Can't create $tdir" if(! -d $tdir);
+
 foreach my $data1 (@$aData1)
 {
     my($id, $seq) = split(/\n/, $data1);
-    $id =~ s/\>/_/;
-    my $faaFile1 = "/tmp/$label1$id.faa";
+    $id =~ s/\>/_/;   # Replace the leading > in the ID with _
+    $seq =~ s/\*/ /g; # Replace * in the sequence with ' '
+    my $faaFile1 = "$tdir/$label1$id.faa";
     if(! -f $faaFile1)
     {
         if(open(my $out, '>', "$faaFile1"))
         {
-            print $out "$data1\n";
+            $id =~ s/_/\>/;   # Restore the leading >
+            print $out "$id\n";
+            print $out "$seq\n";
             close $out;
         }
     }
@@ -38,13 +45,16 @@ foreach my $data1 (@$aData1)
     foreach my $data2 (@$aData2)
     {
         my($id, $seq) = split(/\n/, $data2);
-        $id =~ s/\>/_/;
-        $faaFile2 = "/tmp/$label2$id.faa";
+        $id =~ s/\>/_/;   # Replace the leading > in the ID with _
+        $seq =~ s/\*/ /g; # Replace * in the sequence with ' '
+        $faaFile2 = "$tdir/$label2$id.faa";
         if(! -f $faaFile2)
         {
             if(open(my $out, '>', "$faaFile2"))
             {
-                print $out "$data2\n";
+                $id =~ s/_/\>/;   # Restore the leading >
+                print $out "$id\n";
+                print $out "$seq\n";
                 close $out;
             }
         }
@@ -61,6 +71,8 @@ foreach my $data1 (@$aData1)
     }
     unlink($faaFile1);
 }
+
+`rm -rf $tdir`;
 
 printf "Average similarity: %.2f\%", $totSim / $count;
 printf "Average ID:         %.2f\%", $totID  / $count;
