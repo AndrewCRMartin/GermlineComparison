@@ -7,6 +7,11 @@ my %bestid2  = ();
 my %bestsim1 = ();
 my %bestsim2 = ();
 
+my %bestid1Gene  = ();
+my %bestid2Gene  = ();
+my %bestsim1Gene = ();
+my %bestsim2Gene = ();
+
 while(<>)
 {
     if(! /^Average/)
@@ -24,19 +29,23 @@ while(<>)
         if((!defined($bestid1{$seq1})) || ($id > $bestid1{$seq1}))
         {
             $bestid1{$seq1} = $id;
+            $bestid1Gene{$seq1} = $seq2;
         }
         if((!defined($bestid2{$seq2})) || ($id > $bestid2{$seq2}))
         {
             $bestid2{$seq2} = $id;
+            $bestid2Gene{$seq2} = $seq1;
         }
         
         if((!defined($bestsim1{$seq1})) || ($sim > $bestsim1{$seq1}))
         {
             $bestsim1{$seq1} = $sim;
+            $bestsim1Gene{$seq1} = $seq2;
         }
         if((!defined($bestsim2{$seq2})) || ($sim > $bestsim2{$seq2}))
         {
             $bestsim2{$seq2} = $sim;
+            $bestsim2Gene{$seq2} = $seq1;
         }
     }
 }
@@ -52,7 +61,7 @@ my $count1   = 0;
 foreach my $key (sort keys %bestid1)
 {
     ($species1) = split(/_/, $key) if($species1 eq '');
-    print "$key BestSim: $bestsim1{$key} BestID: $bestid1{$key}\n";
+    print "$key BestSim: $bestsim1{$key} ($bestsim1Gene{$key}) BestID: $bestid1{$key} ($bestid1Gene{$key})\n";
     $meanSim1 += $bestsim1{$key};
     $meanID1  += $bestid1{$key};
     $count1++;
@@ -65,7 +74,7 @@ my $count2   = 0;
 foreach my $key (sort keys %bestid2)
 {
     ($species2) = split(/_/, $key) if($species2 eq '');
-    print "$key BestSim: $bestsim2{$key} BestID: $bestid2{$key}\n";
+    print "$key BestSim: $bestsim2{$key} ($bestsim2Gene{$key}) BestID: $bestid2{$key} ($bestid2Gene{$key})\n";
     $meanSim2 += $bestsim2{$key};
     $meanID2  += $bestid2{$key};
     $count2++;
